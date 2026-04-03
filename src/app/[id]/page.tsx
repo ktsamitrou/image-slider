@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import Comments from "../components/Comments";
@@ -10,6 +11,12 @@ interface Props {
 
 export function generateStaticParams() {
   return images.map((img) => ({ id: String(img.id) }));
+}
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { id } = await params;
+  const image = images.find((img) => img.id === Number(id));
+  return { title: image ? `${image.alt} – My Gallery` : "My Gallery" };
 }
 
 export default async function GalleryPage({ params }: Props) {
