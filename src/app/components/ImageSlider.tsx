@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { images, SliderImage } from "../data/images";
 import Lightbox from "./Lightbox";
@@ -18,20 +18,19 @@ function preloadIndices(current: number, total: number): Set<number> {
   return indices;
 }
 
-function indexFromId(id: number | null): number {
-  if (id === null) return 0;
+function indexFromId(id: number): number {
   const found = images.findIndex((img) => img.id === id);
   return found >= 0 ? found : 0;
 }
 
-export default function ImageSlider() {
-  const router = useRouter();
-  const searchParams = useSearchParams();
+interface Props {
+  initialId: number;
+}
 
-  const initialIndex = useMemo(() => {
-    const idParam = searchParams.get("id");
-    return indexFromId(idParam ? Number(idParam) : null);
-  }, [searchParams]);
+export default function ImageSlider({ initialId }: Props) {
+  const router = useRouter();
+
+  const initialIndex = useMemo(() => indexFromId(initialId), [initialId]);
 
   const [currentIndex, setCurrentIndex] = useState(initialIndex);
   const [lightboxOpen, setLightboxOpen] = useState(false);
@@ -44,11 +43,9 @@ export default function ImageSlider() {
     (index: number) => {
       const next = (index + total) % total;
       setCurrentIndex(next);
-      const params = new URLSearchParams(searchParams.toString());
-      params.set("id", String(images[next].id));
-      router.push(`?${params.toString()}`, { scroll: false });
+      router.push(`/${images[next].id}`, { scroll: false });
     },
-    [router, searchParams, total],
+    [router, total],
   );
 
   const goPrev = useCallback(
