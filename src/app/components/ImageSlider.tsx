@@ -123,9 +123,7 @@ export default function ImageSlider() {
             src={currentImage.src}
             alt={currentImage.alt}
             fill
-            sizes="100vw"
-            className="object-contain"
-            priority
+            sizes="(max-width: 1280px) 100vw, 1280px"
           />
         </div>
 
